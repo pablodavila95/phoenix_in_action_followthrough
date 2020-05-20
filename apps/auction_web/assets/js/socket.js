@@ -6,9 +6,13 @@
 //
 // Pass the token on params as below. Or remove it
 // from the params if you are not using authentication.
-import {Socket} from "phoenix"
+import { Socket } from "phoenix"
 
-let socket = new Socket("/socket", {params: {token: window.userToken}})
+let socket = new Socket("/socket", { params: { token: window.userToken } })
+
+// check the url to subscribe only if it matches
+// url -> regex -> array[0] === whole matched string
+let match = document.location.href.match(/\/items\/(\d+)$/)
 
 // When you connect, you'll often need to authenticate the client.
 // For example, imagine you have an authentication plug, `MyAuth`,
@@ -54,10 +58,14 @@ let socket = new Socket("/socket", {params: {token: window.userToken}})
 // Finally, connect to the socket:
 socket.connect()
 
-// Now that you are connected, you can join channels with a topic:
-let channel = socket.channel("topic:subtopic", {})
-channel.join()
-  .receive("ok", resp => { console.log("Joined successfully", resp) })
-  .receive("error", resp => { console.log("Unable to join", resp) })
+if (match) {
+  let itemId = match[1]
+  // Now that you are connected, you can join channels with a topic:
+  let channel = socket.channel(`item:${itemId}`, {})
+  channel.join()
+    .receive("ok", resp => { console.log("Joined successfully", resp) })
+    .receive("error", resp => { console.log("Unable to join", resp) })
+}
+
 
 export default socket

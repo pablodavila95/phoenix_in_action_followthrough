@@ -7,12 +7,13 @@ defmodule AuctionWeb.Application do
 
   def start(_type, _args) do
     children = [
-      # Start the Telemetry supervisor
+      #The book had an issue caused by the initial structure of the umbrella app where the PubSub was not initiated. Supposed to be created when
+      #using Ecto but we specifically not used it. I added the next line and fixed it.
+      {Phoenix.PubSub, name: AuctionWeb.PubSub},
       AuctionWeb.Telemetry,
       # Start the Endpoint (http/https)
-      AuctionWeb.Endpoint
-      # Start a worker by calling: AuctionWeb.Worker.start_link(arg)
-      # {AuctionWeb.Worker, arg}
+      AuctionWeb.Endpoint,
+
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
